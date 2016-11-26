@@ -1,5 +1,9 @@
 #!/bin/bash
 
+function Build {
+	g++ -g -O2 -static -std=gnu++11 -o $1.bin $1.cpp
+}
+
 # CHECK FOR PARAMETERS
 if [ -z $1 ]; then
 	echo "build: No problem name or command given."
@@ -35,11 +39,27 @@ if [ $1 == '-i' ]; then
 
 	gvim $2/$2.cpp
 	exit
+elif [ $1 == '-t' ]; then
+	if [ -z $2 ]; then
+		echo "build.test: No name given."
+		exit -1
+	fi
+
+	pushd $2
+	Build $2
+	if [ $? -eq 0 ]; then
+		for n in samples/*.in; do
+			echo "Running sample $n ..."
+			cat $n | ./$2.bin > samples/`basename $n .in`.out
+			diff samples/`basename $n .in`.out samples/`basename $n .in`.ans
+			echo "Done."
+		done
+	else
+		echo "Build failed, not running tests."
+	fi
+	popd
 else
-
-
-pushd $1
-	g++ -g -O2 -static -std=gnu++11 -o $1.bin $1.cpp && ./$1.bin
-popd
-
+	pushd $1
+	Build $1
+	popd
 fi
