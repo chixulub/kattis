@@ -58,6 +58,15 @@ elif [ $1 == '-t' ]; then
 		echo "Build failed, not running tests."
 	fi
 	popd
+elif [ $1 == '-r' ]; then
+	pushd $2
+	Build $2
+	for n in samples/*.in; do
+		echo "Running sample $n ..."
+		cat $n | ./$2.bin
+		echo "Done."
+	done
+	popd
 else
 	pushd $1
 	Build $1
