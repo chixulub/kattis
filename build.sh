@@ -23,7 +23,8 @@ if [ $1 == '-i' ]; then
 		echo "build.init: Initializing problem \"$2\""
 		mkdir $2
 		pushd $2
-		wget https://open.kattis.com/problems/$2 -O $2.html
+#		wget https://open.kattis.com/problems/$2 -O $2.html
+		wget https://open.kattis.com/problems/$2/file/statement/samples.zip
 		cp ../TEMPLATE.cpp $2.cpp
 		if [ $? -ne 0 ]; then
 			echo "build.init: \"$2\" does not seem to be a valid kattis problem."
@@ -31,7 +32,6 @@ if [ $1 == '-i' ]; then
 			rm -rf $2
 			exit -1
 		fi
-		wget https://open.kattis.com/problems/$2/file/statement/samples.zip
 		unzip -d samples samples.zip
 		rm -f samples.zip
 		popd
@@ -67,6 +67,10 @@ elif [ $1 == '-r' ]; then
 		echo "Done."
 	done
 	popd
+elif [ $1 == '-s' ]; then
+	git add $2
+	git commit -m"Solve problem: $2"
+	git log -n1
 else
 	pushd $1
 	Build $1
