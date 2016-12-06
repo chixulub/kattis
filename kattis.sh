@@ -179,5 +179,10 @@ function k_usage
 
 
 function k_build {
-	g++ -g -O2 -static -std=gnu++11 -o $1.bin $1.cpp
+	if [[ "0" == $(grep float $1.cpp | wc -l) ]]; then
+		g++ -g -O2 -static -std=gnu++11 -o $1.bin $1.cpp
+	else
+		echo "Don't use float, you idiot!!!"
+		return -1
+	fi
 }
