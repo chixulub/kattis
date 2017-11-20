@@ -64,8 +64,14 @@ function k_kattisMain
 		"run") 
 			k_run
 			;;
+		"rundebug")
+			k_run_debug
+			;;
 		"commit")
 			k_commit
+			;;
+		"core")
+			k_core
 			;;
 		"?")
 			k_query
@@ -141,6 +147,24 @@ function k_run
 	popd
 }
 
+function k_run_debug
+{
+	echo "Action RUN DEBUG for problem \"$problem\""
+	pushd $problem
+	k_build_debug $problem
+	if [ $? -eq 0 ]; then
+		echo "Debug build successful."
+		for n in samples/*.in; do
+			echo "Running sample $n ..."
+			cat $n | ./$problem.bin
+			echo "Done."
+		done
+	else
+		echo "Error: Build failed, not running tests."
+	fi
+	popd
+}
+
 function k_commit
 {
 	echo "Action COMMIT for problem \"$problem\""
@@ -148,6 +172,12 @@ function k_commit
 	git commit -m"Solve problem: $problem"
 	git log -n1
 	git status
+}
+
+function k_core
+{
+	echo "Action CORE for problem \"$problem\""
+	gdb $problem/$problem.bin $problem/core
 }
 
 function k_query
@@ -181,6 +211,15 @@ function k_usage
 function k_build {
 	if [[ "0" == $(grep float $1.cpp | wc -l) ]]; then
 		g++ -g -O2 -static -std=gnu++11 -o $1.bin $1.cpp
+	else
+		echo "Don't use float, you idiot!!!"
+		return -1
+	fi
+}
+
+function k_build_debug {
+	if [[ "0" == $(grep float $1.cpp | wc -l) ]]; then
+		g++ -ggdb -O0 -static -std=gnu++11 -o $1.bin $1.cpp
 	else
 		echo "Don't use float, you idiot!!!"
 		return -1
