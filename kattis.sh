@@ -73,6 +73,9 @@ function k_kattisMain
 		"core")
 			k_core
 			;;
+		"submit")
+			k_submit
+			;;
 		"?")
 			k_query
 			return 0
@@ -172,6 +175,12 @@ function k_commit
 	git commit -m"Solve problem: $problem"
 	git log -n1
 	git status
+}
+
+function k_submit
+{
+	echo "Action SUBMIT for problem \"$problem\""
+	python3 submit.py -p $problem $problem/$problem.cpp
 }
 
 function k_core
